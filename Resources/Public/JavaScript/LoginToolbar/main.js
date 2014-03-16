@@ -89,26 +89,43 @@
 				}, '-'
 			];
 			users = users.concat(TYPO3.settings.easylogin.users);
-			if(TYPO3.settings.easylogin.config.toolbarType == 'bottom') {
-				toolbar = {
-					autoScroll: true,
-					bbar  : users,
-					contentEl: Ext.DomQuery.selectNode('form')
-				}
-			} else {
-				toolbar = {
-					autoScroll: true,
-					tbar  : users,
-					contentEl: Ext.DomQuery.selectNode('form')
-				}
+			switch(TYPO3.settings.easylogin.config.toolbarType) {
+				case 'bottom':
+				case 'top':
+					if(TYPO3.settings.easylogin.config.toolbarType == 'bottom') {
+						toolbar = {
+							autoScroll: true,
+							bbar  : users,
+							contentEl: Ext.DomQuery.selectNode('form')
+						}
+					} else {
+						toolbar = {
+							autoScroll: true,
+							tbar  : users,
+							contentEl: Ext.DomQuery.selectNode('form')
+						}
+					}
+					this.viewport = new Ext.Viewport({
+						layout: 'fit',
+						items: [
+							toolbar
+						]
+					});
+				break;
+				case 'inline':
+					this.viewport = new Ext.Toolbar({
+						renderTo: Ext.select('.t3-login-field').first(),
+						items: TYPO3.settings.easylogin.users,
+						enableOverflow: true
+					});
+				break;
+				default:
+					window.alert('no known rendering type for login found');
+				break;
 			}
+
 			
-			this.viewport = new Ext.Viewport({
-				layout: 'fit',
-				items: [
-					toolbar
-				]
-			});
+
 		}
 	}
 /*******************************************************************************
