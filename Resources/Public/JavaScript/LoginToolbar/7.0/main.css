@@ -1,0 +1,8 @@
+#t3-login-username-section {
+	background-color: #3a3a3a;
+}
+
+#t3-login-username-section .btn-default {
+	border-color: transparent;
+	background-color: transparent;
+}

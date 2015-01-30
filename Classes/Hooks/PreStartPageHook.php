@@ -1,6 +1,14 @@
 <?php
 
-class tx_easylogin_Hooks_PreStartPageHook{
+namespace KayStrobach\Easylogin\Hooks;
+
+use TYPO3\CMS\Backend\Utility\IconUtility;
+use TYPO3\CMS\Core\Resource\Utility\BackendUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+
+class PreStartPageHook{
 
 	function addLoginNews(&$params, &$reference) {
 		global $TYPO3_CONF_VARS;
@@ -14,7 +22,7 @@ class tx_easylogin_Hooks_PreStartPageHook{
 			unset($config['usersAndPasswords']);
 		
 		//access check
-			if($_EXTCONF['use_devIPmask'] && !t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
+			if($_EXTCONF['use_devIPmask'] && !GeneralUtility::cmpIP(GeneralUtility::getIndpEnv('REMOTE_ADDR'), $TYPO3_CONF_VARS['SYS']['devIPmask'])) {
 				return;
 			}
 		//parse users
@@ -30,7 +38,7 @@ class tx_easylogin_Hooks_PreStartPageHook{
 				);
 			}
 		//get openid users
-			if(t3lib_extMgm::isLoaded('openid')) {
+			if(ExtensionManagementUtility::isLoaded('openid')) {
 				$time = time();
 				$openIdUsers = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 					'*',
@@ -65,14 +73,11 @@ class tx_easylogin_Hooks_PreStartPageHook{
 			}
 		//add library and settings
 			if(count($users)){
-				$reference->getPageRenderer()->addJsFile(
-					t3lib_extMgm::extRelPath('easylogin')
-						.'Resources/Public/JavaScript/LoginToolbar/main.js'
-				);
-				$reference->getPageRenderer()->addCssFile(
-					t3lib_extMgm::extRelPath('easylogin')
-						.'Resources/Public/JavaScript/LoginToolbar/main.css'
-				);
+				if(VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) < 7000000) {
+					$this->renderForVersion($reference, '6.2');
+				} else {
+					$this->renderForVersion($reference, '7.0');
+				}
 				$reference->getPageRenderer()->addInlineSetting(
 					'easylogin',
 					'users',
@@ -87,13 +92,25 @@ class tx_easylogin_Hooks_PreStartPageHook{
 	}
 	function getIcon($username) {
 		$username = $GLOBALS['TYPO3_DB']->fullQuoteStr($username,'be_users');
-		$user = t3lib_BEfunc::getRecordRaw(
+		$user = BackendUtility::getRecordRaw(
 			'be_users',
 			'username="'.$username.'"'
 		);
-		return t3lib_iconWorks::getIcon(
+		return IconUtility::getIcon(
 				'be_users',
 				$user
 			);
+	}
+
+	function renderForVersion($reference, $version) {
+		$reference->getPageRenderer()->addJsFile(
+			ExtensionManagementUtility::extRelPath('easylogin')
+			.'Resources/Public/JavaScript/LoginToolbar/' . $version . '/main.js'
+		);
+		$reference->getPageRenderer()->addCssFile(
+			ExtensionManagementUtility::extRelPath('easylogin')
+			.'Resources/Public/JavaScript/LoginToolbar/' . $version . '/main.css'
+		);
+
 	}
 }
