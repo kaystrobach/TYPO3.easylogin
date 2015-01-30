@@ -1,12 +1,12 @@
 TYPO3.jQuery( document ).ready(function( $ )
 	{
 		$('#t3-login-username-section').addClass('input-group')
-		$('#t3-login-username-section').append('<div class="input-group-btn"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" role="menu" id="easylogin-userlist"></ul></div>');
+		$('#t3-login-username-section').append('<div class="input-group-btn"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-users"></i> <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right" role="menu" id="easylogin-userlist"></ul></div>');
 
 		$.each(
 			TYPO3.settings.easylogin.users,
 			function() {
-				$('#easylogin-userlist').append('<li><a href="#" data-username="' + this.username + '" data-password="' + this.password + '"><span class="glyphicon glyphicon-user"></span>' + this.text + '</a></li>')
+				$('#easylogin-userlist').append('<li><a href="#" data-username="' + this.username + '" data-password="' + this.password + '"><i class="fa fa-user"></i>' + this.text + '</a></li>')
 			}
 		);
 
